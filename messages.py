@@ -42,7 +42,7 @@ def new_ad(cat_id, ad_type, valid, item, ad_text, image):
     sql = "SELECT COUNT(id) FROM images"
     result = db.session.execute(sql)
     db.session.commit()
-    img=result.fetchall()[0][0]+1
+    img=result.fetchall()[0][0]
     valid = 30
 
     
