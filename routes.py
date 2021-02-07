@@ -17,11 +17,15 @@ def about():
 
 @app.route("/new_message/<int:to_id>", methods=['GET', 'POST'])
 def new_message(to_id):
+    user_id = users.user_id()
+    if user_id == 0:
+        flash(f'Kirjaudu jotta voit voit lähettää viestin', 'danger')
+        return redirect("/")
     form = new_mesageForm()
     if form.validate_on_submit():
         content = form.message.data
         if messages.send(content, to_id):
-            flash(f'Viesti lähetetty {form.message.data}!', 'onnistui!')
+            flash(f'Viesti lähetetty {form.message.data}!', 'success')
             return redirect("/")
         else:
             flash('Voi hitsi! Viestin lähettäminen ei onnistunut', 'danger')
@@ -31,8 +35,19 @@ def new_message(to_id):
 @app.route("/show_messages")
 def show_messages():
     m = messages.get_messages()
-    return render_template('show_messages.html', messages=m)
+    if m: 
+        return render_template('show_messages.html', messages=m)
+    else:
+        return redirect("/")
 
+@app.route("/my_ads")
+def my_ads():
+    ads = messages.get_my_list()
+    if ads != False:
+        return render_template('my_ads.html', lists=ads)
+    else:
+        flash(f'Kirjaudu jotta voit nähdä omat ilmoituksesi', 'danger')
+        return redirect("/")
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -40,7 +55,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         if users.register(form.username.data,form.password.data):
-            flash(f'Tili luotu käyttäjälle {form.username.data}!', 'onnistui!')
+            flash(f'Tili luotu käyttäjälle {form.username.data}!', 'success')
             return redirect("/")
         else:
             flash('Kirjautuminen epäonnistui. Tarkista käyttäjätunnus ja salasana', 'danger')
@@ -53,20 +68,28 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         if users.login(form.username.data,form.password.data):
-            flash(f'Logged in {form.username.data}!', 'success')
+            flash(f'Kirjautunut {form.username.data}!', 'success')
             return redirect("/")
         else:
-            flash('Login Unsuccessful. Please check username and password', 'danger')
+            flash('Kirjautuminen epäonnistui. Ole hyvä ja tarkista käyttäjätunnus ja salasana', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 @app.route("/logout")
 def logout():
+    user_id = users.user_id()
+    if user_id == 0:
+        flash(f'Kirjaudu jotta voit kirjautua ulos', 'danger')
+        return redirect("/")
     users.logout()
-    flash(f'Logged out!', 'success')
+    flash(f'Ulos kirjautuminen onnistui!', 'success')
     return redirect("/")
 
 @app.route("/new_ad", methods=['GET', 'POST'])
 def new_ad():
+    user_id = users.user_id()
+    if user_id == 0:
+        flash(f'Kirjaudu jotta voit jättää ilmoituksen', 'danger')
+        return redirect("/")
     form = new_adForm()
     result = messages.get_cat()
     form.cat.choices = [(r['id'],r['cat_name'] ) for r in result]
@@ -83,6 +106,14 @@ def new_ad():
         else:
             flash('new_ad Unsuccessful. Please check username and password', 'danger')
     return render_template('new_ad.html', title='new_ad', form=form)
+
+
+@app.route("/delete_ad/<int:id>")
+def delete_ad(id):
+    
+    messages.delete_ad(id)
+  
+    return redirect("/my_ads")
 
 @app.route("/ad/<int:id>")
 def ad(id):

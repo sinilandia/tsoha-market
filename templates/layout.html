@@ -23,15 +23,7 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
-            <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="#">Pääsivu</a>
-              <a class="nav-item nav-link" href="#">Tietoja</a>
-            </div>
             <!-- Navbar Right Side -->
-            <div class="navbar-nav">
-              <a class="nav-item nav-link" href="{{ url_for('login') }}">Kirjaudu</a>
-              <a class="nav-item nav-link" href="{{ url_for('register') }}">Rekisteröityminen</a>
-            </div>
           </div>
         </div>
       </nav>
@@ -56,9 +48,9 @@
               <ul class="list-group">
                 <a class="list-group-item list-group-item-light" href="{{ url_for('login') }}">Kirjaudu</a>
                 <a class="list-group-item list-group-item-light" href="{{ url_for('logout') }}">Ulos</a>
-                <a class="list-group-item list-group-item-light" href="{{ url_for('new_ad') }}">Uuusi ilmoitus</a>
+                <a class="list-group-item list-group-item-light" href="{{ url_for('new_ad') }}">Uusi ilmoitus</a>
                 <a class="list-group-item list-group-item-light" href="\show_messages">Viestit</a>
-                <li class="list-group-item list-group-item-light">Ohjeet</li>
+                <a class="list-group-item list-group-item-light"href="\my_ads">Omat ilmoitukset</a>
                 <li class="list-group-item list-group-item-light">jne...</li>
               </ul>
             </p>

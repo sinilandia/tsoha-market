@@ -1,17 +1,28 @@
 from db import db
 import users
-from flask import make_response
+from flask import make_response, flash
 
 def get_list():
-    sql = "SELECT A.id, A.item, A.ad_text, C.cat_name, A.img, A.user_id FROM ad A, category C WHERE A.cat_id = C.id ORDER BY A.sent_at"
+    sql = "SELECT A.id, A.item, A.ad_text, C.cat_name, A.img, A.user_id FROM ad A, category C WHERE A.cat_id = C.id AND A.ad_type != 5 ORDER BY A.sent_at DESC"
     result = db.session.execute(sql)
     list = result.fetchall()
+    return list
+
+def get_my_list():
+    
+    user_id = users.user_id()
+    if user_id == 0:
+        return False
+    
+    sql = "SELECT A.id, A.item, A.ad_text, C.cat_name, A.img, A.user_id FROM ad A, category C WHERE A.cat_id = C.id AND A.user_id=:user_id AND A.ad_type != 5 ORDER BY A.sent_at DESC"
+    result = db.session.execute(sql, {"user_id":user_id})
+    list = result.fetchall()
+   
     return list
 
 def send(content, to_id):
     from_id = users.user_id()
     if from_id == 0:
-        flash('Et voi lähettää viestiä ellet ole kirjautunut', 'danger')
         return False
     sql = "INSERT INTO messages (content, from_id, to_id, sent_at) VALUES (:content, :from_id, :to_id, NOW())"
     db.session.execute(sql, {"content":content, "from_id":from_id, "to_id":to_id})
@@ -21,6 +32,7 @@ def send(content, to_id):
 def get_messages():
     user_id = users.user_id()
     if user_id == 0:
+        flash('Kirjaudu jotta voit valita omat viestisi', 'danger')
         return False
     to_id = user_id
     sql = "SELECT content, from_id, to_id, sent_at FROM messages WHERE to_id=:to_id ORDER BY sent_at DESC"
@@ -49,6 +61,12 @@ def new_ad(cat_id, ad_type, valid, item, ad_text, image):
     sql = """INSERT INTO ad (user_id, cat_id, ad_type, sent_at, valid, item, ad_text, img)
              VALUES (:user_id, :cat_id, :ad_type, NOW(), :valid, :item, :ad_text, :img)"""
     db.session.execute(sql, {"user_id":user_id, "cat_id":cat_id, "ad_type":ad_type, "valid":valid, "item":item, "ad_text":ad_text, "img":img})
+    db.session.commit()
+    return True
+
+def delete_ad(id):
+    sql = "UPDATE ad SET ad_type=5 WHERE id=:id"
+    db.session.execute(sql, {"id":id})
     db.session.commit()
     return True
 

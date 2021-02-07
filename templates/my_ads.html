@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+{% for list in lists %}
+<p>
+  <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#{{ list.id }}" aria-expanded="false"
+    aria-controls="collapseExample">
+    {{ list.item }}
+  </button>
+</p>
+<div class="collapse" id="{{ list.id }}">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+        <a class="article-content">{{ list.ad_text }}</a>
+      </div>
+      <div class="col-sm">
+        <img src="/ad_photo/{{ list[4] }}" alt="Kuva" >
+        <a href="/delete_ad/{{ list.id }}" class="btn btn-sm" role="button" aria-disabled="true">Poista ilmoitus</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endfor %}
+{% endblock %}
