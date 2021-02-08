@@ -19,7 +19,7 @@ def about():
 def new_message(to_id):
     user_id = users.user_id()
     if user_id == 0:
-        flash(f'Kirjaudu jotta voit voit lähettää viestin', 'danger')
+        flash(f'Kirjaudu jotta voit lähettää viestin', 'danger')
         return redirect("/")
     form = new_mesageForm()
     if form.validate_on_submit():
@@ -104,7 +104,7 @@ def new_ad():
             flash(f'new_ad done {form.item.data}!', 'success')
             return redirect("/")
         else:
-            flash('new_ad Unsuccessful. Please check username and password', 'danger')
+            flash('Uuden ilmoituksen lisääminen ei onnistunut. Kokeile uudestaan.', 'danger')
     return render_template('new_ad.html', title='new_ad', form=form)
 
 
